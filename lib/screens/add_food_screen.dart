@@ -20,7 +20,7 @@ class _AddFoodState extends State<AddFood> {
   final TextEditingController foodItemController = TextEditingController();
   final TextEditingController calorieController = TextEditingController();
 
-  // Function create food object upload to database
+  // Create food object and upload to database
   Future<void> addFood() async {
     final String item = foodItemController.text;
     final int? calories = int.tryParse(calorieController.text);
@@ -34,12 +34,13 @@ class _AddFoodState extends State<AddFood> {
       updateFoodList();
     }
   }
-
+  // delete food from database
   Future<void> deleteFood(Food food) async {
     await DatabaseHelper.deleteFood(food);
     updateFoodList();
   }
 
+  // update food list displayed on screen
   Future<void> updateFoodList() async {
     final List<Food>? foods = await DatabaseHelper.getAllFood();
     if (foods != null) {
@@ -107,7 +108,7 @@ class _AddFoodState extends State<AddFood> {
     );
   }
 
-  // Dialogue (form) for adding food to database
+  // Dialogue for adding food to database
   Future<void> _addFoodDialogue() async {
     return showDialog(
       context: context,

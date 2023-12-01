@@ -1,3 +1,5 @@
+// food object
+
 class Food {
   // Attributes
   final int? id;
@@ -10,6 +12,7 @@ class Food {
     required this.calories,
   });
 
+  // map to json to insert into database
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -17,7 +20,7 @@ class Food {
       'calories': calories,
     };
   }
-
+  // retrieve from database and map to object
   factory Food.fromJson(Map<String, dynamic> json) {
     return Food(
       id: json['id'] as int?,

@@ -16,6 +16,7 @@ class _HomeState extends State<Home> {
   List<MealPlan> savedPlans = [];
   String searchQuery = '';
 
+  // Update meal plans from database method if action called delete/search
   Future<void> _updateMealPlans() async {
     List<MealPlan> plans;
     if (searchQuery.isEmpty) {
@@ -28,6 +29,7 @@ class _HomeState extends State<Home> {
     });
   }
 
+  // Update screen with saved meal plans with screen initializes
   @override
   void initState() {
     super.initState();
@@ -38,6 +40,8 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
+
+      // app bar top
       appBar: AppBar(
         title: const Text('Meal Plan App'),
         centerTitle: true,
@@ -46,7 +50,7 @@ class _HomeState extends State<Home> {
       body: Column(
         children: [
           Container(
-            // search bar
+            // Search bar
             padding: const EdgeInsets.all(8.0),
             child: TextField(
               decoration: InputDecoration(
@@ -68,6 +72,8 @@ class _HomeState extends State<Home> {
             ),
           ),
           Expanded(
+
+            // If no meal plans saved print text
             child: savedPlans.isEmpty
                 ? const Center(
               child: Text(
@@ -79,6 +85,8 @@ class _HomeState extends State<Home> {
                     fontWeight: FontWeight.bold),
               ),
             )
+
+            // If meal plans saved create listview of cards with meal plan
                 : ListView.separated(
               itemCount: savedPlans.length,
               separatorBuilder: (context, index) => const SizedBox(height: 10), // Adds space between cards
@@ -92,6 +100,7 @@ class _HomeState extends State<Home> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(16.0),
+                        // format date for meal plans
                         child: Text(
                           'Meal Plan on ${DateFormat('yyyy-MM-dd').format(mealPlan.date)}',
                           style: const TextStyle(fontWeight: FontWeight.bold),
@@ -115,6 +124,8 @@ class _HomeState extends State<Home> {
                             ),
                           ],
                         ),
+
+                        // Ontap of meal plan card navigate to update screen and pass selected meal plan object
                         onTap: () async {
                           await Navigator.push(
                             context,
@@ -124,6 +135,8 @@ class _HomeState extends State<Home> {
                           );
                           _updateMealPlans();
                         },
+
+                        // delete meal plan objct
                         trailing: IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () {
@@ -140,6 +153,8 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
+
+      // Create new meal plan button
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
         onPressed: () async {

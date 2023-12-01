@@ -68,6 +68,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
+            // Select date button
             ElevatedButton(
               onPressed: () => selectDate(context),
               style: ElevatedButton.styleFrom(
@@ -80,6 +81,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               ),
             ),
             const SizedBox(height: 30),
+            // Max Calorie input
             TextField(
               controller: maxCalorieController,
               decoration: const InputDecoration(
@@ -89,7 +91,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 20,),
-            // Display selected foods here
+            // Selected food items display
             Expanded(
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -105,6 +107,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text('${selectedFoods[index].item} - ${selectedFoods[index].calories} cal'),
+                      // remove food item
                       trailing: IconButton(
                         icon: const Icon(
                           Icons.delete,
@@ -124,6 +127,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               ),
             ),
             const SizedBox(height: 20,),
+            // navigate to add food screen
             ElevatedButton(
               onPressed: () async {
                 final result = await Navigator.push(

@@ -48,33 +48,17 @@ class _UpdateMealPlanScreenState extends State<UpdateMealPlanScreen> {
       date: selectedDate,
       mealSelection: selectedFoods,
     );
+
     await DatabaseHelper.updateMealPlan(updatedMealPlan);
     Fluttertoast.showToast(msg: "Meal plan updated successfully");
     Navigator.of(context).pop(true);
   }
-
   // Method to remove food from the selected food list
   void _removeFood(int i) {
     setState(() {
       selectedFoods.removeAt(i);
     });
   }
-
-  // Method to select a date
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: selectedDate,
-      firstDate: DateTime(2023),
-      lastDate: DateTime(2050),
-    );
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,8 +71,9 @@ class _UpdateMealPlanScreenState extends State<UpdateMealPlanScreen> {
         padding: const EdgeInsets.all(12.0),
         child: Column(
           children: [
+            // select date button
             ElevatedButton(
-              onPressed: () => _selectDate(context),
+              onPressed: () => selectDate(context),
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20)
@@ -99,6 +84,7 @@ class _UpdateMealPlanScreenState extends State<UpdateMealPlanScreen> {
               ),
             ),
             const SizedBox(height: 30),
+            // Max Calorie input
             TextField(
               controller: maxCalorieController,
               decoration: const InputDecoration(
@@ -108,6 +94,7 @@ class _UpdateMealPlanScreenState extends State<UpdateMealPlanScreen> {
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 20,),
+            // Selected food items display
             Expanded(
               child: Container(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -123,6 +110,7 @@ class _UpdateMealPlanScreenState extends State<UpdateMealPlanScreen> {
                   itemBuilder: (context, index) {
                     return ListTile(
                       title: Text('${selectedFoods[index].item} - ${selectedFoods[index].calories} cal'),
+                      // remove food item
                       trailing: IconButton(
                         icon: const Icon(
                           Icons.delete,
@@ -142,6 +130,7 @@ class _UpdateMealPlanScreenState extends State<UpdateMealPlanScreen> {
               ),
             ),
             const SizedBox(height: 20,),
+            // navigate to add food screen
             ElevatedButton(
               onPressed: () async {
                 final result = await Navigator.push(
@@ -181,5 +170,20 @@ class _UpdateMealPlanScreenState extends State<UpdateMealPlanScreen> {
         ),
       ),
     );
+  }
+
+  // Method to select a date
+  Future<void> selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2023),
+      lastDate: DateTime(2050),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
   }
 }

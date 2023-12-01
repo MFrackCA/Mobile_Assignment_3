@@ -7,6 +7,7 @@ import 'package:path/path.dart';
 import '../models/food.dart';
 
 class DatabaseHelper {
+  // set version and dbname
   static const int _version = 1;
   static const String _dbname = "Assignment3.db";
 
@@ -39,12 +40,12 @@ class DatabaseHelper {
           "totalCalories INTEGER NOT NULL);",
     );
   }
-  // Add food
+  // Add food to database
   static Future<int> addFood(Food food) async {
     final db = await _getDB();
     return await db.insert("Food", food.toJson());
   }
-  // Delete food
+  // Delete food from database
   static Future<int> deleteFood(Food food) async {
     final db = await _getDB();
     return await db.delete("Food",
@@ -52,7 +53,8 @@ class DatabaseHelper {
       whereArgs: [food.id]
     );
   }
-  // Get all food items from Database
+
+  // Get all food items from database
   static Future<List<Food>?> getAllFood() async {
     final db = await _getDB();
     final List<Map<String, dynamic>> foodList = await db.query("Food");
@@ -62,7 +64,7 @@ class DatabaseHelper {
     return List.generate(foodList.length, (index) => Food.fromJson(foodList[index]));
   }
 
-  //Save meal plan
+  // Save meal plan to database
   static Future<int> saveMealPlan(MealPlan mealPlan) async {
     final db = await _getDB();
 
@@ -74,11 +76,10 @@ class DatabaseHelper {
       'totalCalories': mealPlan.totalCalories,
     };
 
-    // Insert the meal plan into the database
     return await db.insert("MealPlan", mealPlanData);
   }
 
-  // Update Meal Plan
+  // Update meal plan in database
   static Future<void> updateMealPlan(MealPlan mealPlan) async {
     final db = await _getDB();
 
@@ -90,7 +91,6 @@ class DatabaseHelper {
       'totalCalories': mealPlan.totalCalories,
     };
 
-    // Update the meal plan in the database
     await db.update(
       'MealPlan',
       mealPlanData,
@@ -99,7 +99,7 @@ class DatabaseHelper {
     );
   }
 
-  // Delete food
+  // Delete meal plan from database
   static Future<void> deleteMealPlan(int id) async {
     final db = await _getDB();
     await db.delete(
@@ -110,7 +110,7 @@ class DatabaseHelper {
   }
 
 
-  // Get all Meal Plans from Database
+  // Get all Meal Plans from database
   static Future<List<MealPlan>> getAllMealPlans() async {
     final db = await _getDB();
     final List<Map<String, dynamic>> mealPlansList = await db.query("MealPlan");
@@ -119,7 +119,7 @@ class DatabaseHelper {
     });
   }
 
-  // Filter Meal Plans
+  // Filter meal plans by date
   static Future<List<MealPlan>> queryMealPlans(String date) async {
     final db = await _getDB();
     final List<Map<String, dynamic>> mealPlansList = await db.query(

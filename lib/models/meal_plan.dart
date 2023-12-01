@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'food.dart';
 
 class MealPlan {
+
+  // attributes
   int? id;
   late DateTime date;
   late List <Food> mealSelection;
@@ -14,6 +16,7 @@ class MealPlan {
     required this.mealSelection,
   }) : totalCalories = calculateTotalCalories(mealSelection);
 
+  // calculate total calories based on food in list
   static int calculateTotalCalories(List<Food> mealSelection) {
     int total = 0;
     for (var foodItem in mealSelection) {
@@ -22,6 +25,7 @@ class MealPlan {
     return total;
   }
 
+  // map to json to insert into database
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -31,11 +35,11 @@ class MealPlan {
     };
   }
 
+  // retrieve from database and map to object
   factory MealPlan.fromJson(Map<String, dynamic> json) {
     final String itemsJsonString = json['Items'] as String;
     final List<dynamic> mealSelectionData = jsonDecode(itemsJsonString);
 
-    // Convert the dynamic list to a list of Food objects
     final List<Food> mealSelection = mealSelectionData
         .map((foodItemData) => Food.fromJson(foodItemData as Map<String, dynamic>))
         .toList();
