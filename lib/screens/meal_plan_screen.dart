@@ -153,8 +153,9 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(12.0),
+        // Save new Meal Plan
         child: ElevatedButton(
-          onPressed: saveMealPlan, // Call method to save new meal plan
+          onPressed: saveMealPlan,
           style: ElevatedButton.styleFrom(
             minimumSize: const Size.fromHeight(50),
             backgroundColor: Colors.green,
@@ -162,7 +163,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               borderRadius: BorderRadius.circular(12.0),
             ),
           ),
-          child: const Text('Save Meal Plan'), // Button text for saving new meal plan
+          child: const Text('Save Meal Plan'),
         ),
       ),
     );
