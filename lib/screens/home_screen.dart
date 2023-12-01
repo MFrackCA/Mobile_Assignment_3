@@ -1,5 +1,6 @@
 import 'package:assign3_calorie_calculator/models/meal_plan.dart';
 import 'package:assign3_calorie_calculator/screens/meal_plan_screen.dart';
+import 'package:assign3_calorie_calculator/screens/update_meal_plan_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -77,6 +78,7 @@ class _HomeState extends State<Home> {
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
                         child: Text('Total Calories: ${mealPlan.totalCalories}'),
                       ),
+                      // Display meal plans on home
                       ...mealPlan.mealSelection.map(
                             (food) => Padding(
                           padding: const EdgeInsets.only(bottom: 4.0),
@@ -85,20 +87,17 @@ class _HomeState extends State<Home> {
                       ),
                     ],
                   ),
-                  onTap: () {
-                    // Navigate to MealPlanScreen with the selected meal plan
-                    Navigator.push(
+                  // navigate to update meal plan screen
+                  onTap: () async {
+                    await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => MealPlanScreen(existingMealPlan: mealPlan),
+                        builder: (context) => UpdateMealPlanScreen(existingMealPlan: mealPlan),
                       ),
-                    ).then((value) {
-                      // Refresh the list if the meal plan was updated
-                      if (value == true) {
-                        _updateMealPlans();
-                      }
-                    });
+                    );
+                    _updateMealPlans();
                   },
+
                 ),
                 Align(
                   alignment: Alignment.centerRight,
@@ -123,10 +122,15 @@ class _HomeState extends State<Home> {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(18)),
         ),
-        onPressed: () { Navigator.push(
+        onPressed: () async {
+          // Open MealPlanScreen and wait for it to return a result
+          await Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const MealPlanScreen())
-        ); },
+            MaterialPageRoute(builder: (context) => const MealPlanScreen()),
+          );
+          // Always refresh the list of meal plans when returning from MealPlanScreen
+          _updateMealPlans();
+        },
         elevation: 6.0,
         child: const Icon(
           Icons.note_add,

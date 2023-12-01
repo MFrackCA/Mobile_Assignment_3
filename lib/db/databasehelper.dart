@@ -81,9 +81,19 @@ class DatabaseHelper {
   // Update Meal Plan
   static Future<void> updateMealPlan(MealPlan mealPlan) async {
     final db = await _getDB();
+
+    String mealSelectionJson = jsonEncode(mealPlan.mealSelection.map((food) => food.toJson()).toList());
+
+    Map<String, dynamic> mealPlanData = {
+      'date': mealPlan.date.toIso8601String(),
+      'Items': mealSelectionJson, // Saving the serialized JSON string
+      'totalCalories': mealPlan.totalCalories,
+    };
+
+    // Update the meal plan in the database
     await db.update(
       'MealPlan',
-      mealPlan.toJson(),
+      mealPlanData,
       where: 'id = ?',
       whereArgs: [mealPlan.id],
     );
