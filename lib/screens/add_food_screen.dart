@@ -35,6 +35,11 @@ class _AddFoodState extends State<AddFood> {
     }
   }
 
+  Future<void> deleteFood(Food food) async {
+    await DatabaseHelper.deleteFood(food);
+    updateFoodList();
+  }
+
   Future<void> updateFoodList() async {
     final List<Food>? foods = await DatabaseHelper.getAllFood();
     if (foods != null) {
@@ -88,6 +93,10 @@ class _AddFoodState extends State<AddFood> {
                     onTap: () {
                       Navigator.pop(context, food);
                     },
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () => deleteFood(food), // Call the delete method here
+                    ),
                   );
                 },
               ),

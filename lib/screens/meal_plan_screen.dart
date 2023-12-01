@@ -18,8 +18,8 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   List<Food> selectedFoods = [];
   TextEditingController maxCalorieController = TextEditingController();
 
-  // Method to save a new meal plan
-  void _saveMealPlan() async {
+  // Method to save meal plan
+  void saveMealPlan() async {
 
     // Warn user to set calories goal
     if (maxCalorieController.text.isEmpty){
@@ -27,15 +27,14 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       return;
     }
 
-
-    // Calculate the total calories of selected foods
+    // Total calories for selected food
     int totalCalories = selectedFoods.fold(0, (sum, food) => sum + food.calories);
 
     // Max Calories input
     int? maxCalories = int.tryParse(maxCalorieController.text);
 
 
-    // Check if maxCalories is set and if total calories exceed maxCalories
+    // Check if total calories less than max calories goal
     if (maxCalories != null && totalCalories > maxCalories) {
       Fluttertoast.showToast(msg: "Cannot save Total Calories higher then Max Calories Goal");
       return;
@@ -70,7 +69,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
         child: Column(
           children: [
             ElevatedButton(
-              onPressed: () => _selectDate(context),
+              onPressed: () => selectDate(context),
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 20)
@@ -139,7 +138,6 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
               },
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size.fromHeight(50),
-                backgroundColor: Colors.green,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
                 ),
@@ -152,7 +150,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(12.0),
         child: ElevatedButton(
-          onPressed: _saveMealPlan, // Call method to save new meal plan
+          onPressed: saveMealPlan, // Call method to save new meal plan
           style: ElevatedButton.styleFrom(
             minimumSize: const Size.fromHeight(50),
             backgroundColor: Colors.green,
@@ -167,7 +165,7 @@ class _MealPlanScreenState extends State<MealPlanScreen> {
   }
 
   // Method to select a date
-  Future<void> _selectDate(BuildContext context) async {
+  Future<void> selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
