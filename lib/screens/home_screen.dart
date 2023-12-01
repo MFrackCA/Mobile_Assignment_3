@@ -1,10 +1,9 @@
-import 'package:assign3_calorie_calculator/models/meal_plan.dart';
-import 'package:assign3_calorie_calculator/screens/meal_plan_screen.dart';
-import 'package:assign3_calorie_calculator/screens/update_meal_plan_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
+import '../models/meal_plan.dart';
 import '../db/databasehelper.dart';
+import '../screens/update_meal_plan_screen.dart';
+import '../screens/meal_plan_screen.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -14,15 +13,19 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-
   List<MealPlan> savedPlans = [];
-
+  String searchQuery = '';
 
   Future<void> _updateMealPlans() async {
-      List<MealPlan> plans = await DatabaseHelper.getAllMealPlans();
-      setState(() {
-        savedPlans = plans;
-      });
+    List<MealPlan> plans;
+    if (searchQuery.isEmpty) {
+      plans = await DatabaseHelper.getAllMealPlans();
+    } else {
+      plans = await DatabaseHelper.queryMealPlans(searchQuery);
+    }
+    setState(() {
+      savedPlans = plans;
+    });
   }
 
   @override
@@ -31,111 +34,122 @@ class _HomeState extends State<Home> {
     _updateMealPlans();
   }
 
-  // Home Page Widget
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[500],
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         title: const Text('Meal Plan App'),
         centerTitle: true,
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.green[700],
       ),
-      body: savedPlans.isEmpty
-          ? const Center(
-          child: Text(
-              'No meal plans currently saved',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                  fontSize: 40,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'IndieFlower'
-              )
-          )
-      )
-          : ListView.builder(
-        itemCount: savedPlans.length,
-        itemBuilder: (context, index) {
-          MealPlan mealPlan = savedPlans[index];
-          return Card(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    'Meal Plan on ${DateFormat('yyyy-MM-dd').format(mealPlan.date)}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+      body: Column(
+        children: [
+          Container(
+            // search bar
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                labelText: 'Search by Date',
+                suffixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
                 ),
-                Container(height: 1, color: Colors.black),  // Straight black line
-                ListTile(
-                  title: Column(
+              ),
+              // Update meal plans on date search
+              onChanged: (value) {
+                setState(() {
+                  searchQuery = value;
+                  _updateMealPlans();
+                });
+              },
+            ),
+          ),
+          Expanded(
+            child: savedPlans.isEmpty
+                ? const Center(
+              child: Text(
+                'No meal plans currently saved',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold),
+              ),
+            )
+                : ListView.separated(
+              itemCount: savedPlans.length,
+              separatorBuilder: (context, index) => const SizedBox(height: 10), // Adds space between cards
+              itemBuilder: (context, index) {
+                MealPlan mealPlan = savedPlans[index];
+                return Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Text('Total Calories: ${mealPlan.totalCalories}'),
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text(
+                          'Meal Plan on ${DateFormat('yyyy-MM-dd').format(mealPlan.date)}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
-                      // Display meal plans on home
-                      ...mealPlan.mealSelection.map(
-                            (food) => Padding(
-                          padding: const EdgeInsets.only(bottom: 4.0),
-                          child: Text('${food.item} - ${food.calories} cal'),
+                      const Divider(color: Colors.black),
+                      ListTile(
+                        title: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Text('Total Calories: ${mealPlan.totalCalories}'),
+                            ),
+                            // Display meal plans on home
+                            ...mealPlan.mealSelection.map(
+                                  (food) => Padding(
+                                padding: const EdgeInsets.only(bottom: 4.0),
+                                child: Text('${food.item} - ${food.calories} cal'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        onTap: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => UpdateMealPlanScreen(existingMealPlan: mealPlan),
+                            ),
+                          );
+                          _updateMealPlans();
+                        },
+                        trailing: IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            DatabaseHelper.deleteMealPlan(mealPlan.id!);
+                            _updateMealPlans();
+                          },
                         ),
                       ),
                     ],
                   ),
-                  // navigate to update meal plan screen
-                  onTap: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => UpdateMealPlanScreen(existingMealPlan: mealPlan),
-                      ),
-                    );
-                    _updateMealPlans();
-                  },
-
-                ),
-                Align(
-                  alignment: Alignment.centerRight,
-                  // delete meal plan
-                  child: IconButton(
-                    icon: const Icon(Icons.delete,
-                        color: Colors.red),
-                    onPressed: () {
-                      DatabaseHelper.deleteMealPlan(mealPlan.id!);
-                      _updateMealPlans();
-                    },
-                  ),
-                ),
-              ],
+                );
+              },
             ),
-          );
-
-        },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(18)),
-        ),
         onPressed: () async {
-          // Open MealPlanScreen and wait for it to return a result
           await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const MealPlanScreen()),
           );
-          // Always refresh the list of meal plans when returning from MealPlanScreen
           _updateMealPlans();
         },
-        elevation: 6.0,
-        child: const Icon(
-          Icons.note_add,
-          size: 25.0,
-        ),
+        child: const Icon(Icons.note_add),
       ),
     );
   }

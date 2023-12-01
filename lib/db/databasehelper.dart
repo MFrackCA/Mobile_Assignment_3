@@ -119,4 +119,16 @@ class DatabaseHelper {
     });
   }
 
+  // Filter Meal Plans
+  static Future<List<MealPlan>> queryMealPlans(String date) async {
+    final db = await _getDB();
+    final List<Map<String, dynamic>> mealPlansList = await db.query(
+      "MealPlan",
+      where: 'date LIKE ?',
+      whereArgs: ['%$date%'],
+    );
+    return List.generate(mealPlansList.length, (i) {
+      return MealPlan.fromJson(mealPlansList[i]);
+    });
+  }
 }
